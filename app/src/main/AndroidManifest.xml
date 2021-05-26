@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WhatsappClone">
-        <activity android:name=".activities.CompleteInfoActivity" />
+        <activity android:name=".activities.CompleteInfoActivity"></activity>
         <activity android:name=".CodeVerificationActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

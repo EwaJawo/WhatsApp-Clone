@@ -14,9 +14,6 @@ public class CodeVerificationActivity extends AppCompatActivity {
     Button mButtonCodeVerification;
     String mExtraPhone;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

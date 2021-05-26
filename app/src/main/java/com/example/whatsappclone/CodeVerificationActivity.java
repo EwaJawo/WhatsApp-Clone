@@ -23,7 +23,6 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.gson.internal.$Gson$Preconditions;
 
 public class CodeVerificationActivity extends AppCompatActivity {
 
@@ -46,10 +45,8 @@ public class CodeVerificationActivity extends AppCompatActivity {
         mEditTextCode = findViewById(R.id.editTextCodeVerification);
         mTextViewSMS = findViewById(R.id.textViewSMS);
         mProgressBar = findViewById(R.id.progressBar);
-
         mAuthProvider = new AuthProvider();
         mUserProvider = new UsersProvider();
-
         mExtraPhone = getIntent().getStringExtra("phone");
         mAuthProvider.sendCodeVerification(mExtraPhone, mCallbacks);
         mButtonCodeVerification.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +83,6 @@ public class CodeVerificationActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.GONE);
             mTextViewSMS.setVisibility(View.GONE);
             Toast.makeText(CodeVerificationActivity.this, "Wystąpił błąd:" + e.getMessage(), Toast.LENGTH_SHORT).show();
-
         }
 
         @Override
@@ -108,7 +104,7 @@ public class CodeVerificationActivity extends AppCompatActivity {
                     mUserProvider.create(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            goToComleteInfo();
+                            goToCompleteInfo();
                         }
                     });
                 }
@@ -118,9 +114,8 @@ public class CodeVerificationActivity extends AppCompatActivity {
             }
         });
     }
-    private void goToComleteInfo() {
+    private void goToCompleteInfo() {
         Intent intent = new Intent(CodeVerificationActivity.this, CompleteInfoActivity.class);
         startActivity(intent);
-
     }
 }

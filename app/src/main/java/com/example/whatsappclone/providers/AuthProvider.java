@@ -35,7 +35,7 @@ public class AuthProvider {
     }
     public String getId() {
         if (mAuth.getCurrentUser() != null) {
-            return mAuth.getCurrentUser().getProviderId();
+            return mAuth.getCurrentUser().getUid();
         } else {
             return null;
         }
