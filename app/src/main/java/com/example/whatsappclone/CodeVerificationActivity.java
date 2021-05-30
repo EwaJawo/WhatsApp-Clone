@@ -23,6 +23,7 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class CodeVerificationActivity extends AppCompatActivity {
 
@@ -49,6 +50,7 @@ public class CodeVerificationActivity extends AppCompatActivity {
         mUserProvider = new UsersProvider();
         mExtraPhone = getIntent().getStringExtra("phone");
         mAuthProvider.sendCodeVerification(mExtraPhone, mCallbacks);
+
         mButtonCodeVerification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,7 +62,6 @@ public class CodeVerificationActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -82,6 +83,7 @@ public class CodeVerificationActivity extends AppCompatActivity {
         public void onVerificationFailed(@NonNull FirebaseException e) {
             mProgressBar.setVisibility(View.GONE);
             mTextViewSMS.setVisibility(View.GONE);
+
             Toast.makeText(CodeVerificationActivity.this, "Wystąpił błąd:" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
@@ -94,17 +96,28 @@ public class CodeVerificationActivity extends AppCompatActivity {
     };
 
     private void signIn(String code) {
-        mAuthProvider.signPhone(mVerificationId, code).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        mAuthProvider.signInPhone(mVerificationId, code).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    User user = new User();
+                  final User user = new User();
                     user.setId(mAuthProvider.getId());
                     user.setPhone(mExtraPhone);
-                    mUserProvider.create(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                     mUserProvider.getUserInfo(mAuthProvider.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
-                        public void onSuccess(Void aVoid) {
-                            goToCompleteInfo();
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if(!documentSnapshot.exists()) {
+                                mUserProvider.create(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        goToCompleteInfo();
+                                    }
+                                });
+                            }
+                            else {
+                                goToCompleteInfo();
+                            }
                         }
                     });
                 }

@@ -29,7 +29,7 @@ public class AuthProvider {
         );
 
     }
-    public Task<AuthResult>signPhone(String verificationId, String code){
+    public Task<AuthResult>signInPhone(String verificationId, String code){
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId,code);
         return mAuth.signInWithCredential(credential);
     }
