@@ -3,11 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.whatsappclone">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -17,9 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WhatsappClone"
         tools:replace="android:theme">
-        <activity android:name=".activities.CompleteInfoActivity"> </activity>
-        <activity android:name=".CodeVerificationActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.HomeActivity"></activity>
+        <activity android:name=".activities.CompleteInfoActivity"></activity>
+        <activity android:name=".activities.CodeVerificationActivity" />
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

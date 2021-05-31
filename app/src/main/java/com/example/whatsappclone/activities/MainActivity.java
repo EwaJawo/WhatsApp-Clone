@@ -2,6 +2,7 @@ package com.example.whatsappclone.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.whatsappclone.R;
+import com.example.whatsappclone.providers.AuthProvider;
 import com.hbb20.CountryCodePicker;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     Button mButtonSendCode;
     EditText mEditTextPhone;
     CountryCodePicker mCountryCode;
+    AuthProvider mAuthProvider;
 
 
     @Override
@@ -26,9 +29,15 @@ public class MainActivity extends AppCompatActivity {
         mButtonSendCode = findViewById(R.id.btnSendCode);
         mEditTextPhone = findViewById(R.id.editTextPhone);
         mCountryCode = findViewById(R.id.ccp);
-        mButtonSendCode.setOnClickListener(v -> {
-          //  goToCodeVerificationActivity();
-            getData();
+        mAuthProvider = new AuthProvider();
+
+
+        mButtonSendCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //goToCodeVerificationActivity();
+                getData();
+            }
         });
     }
 
@@ -38,16 +47,17 @@ public class MainActivity extends AppCompatActivity {
 
         if (phone.equals("")) {
             Toast.makeText(this, "Wpisz numer telefonu", Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             goToCodeVerificationActivity(code + phone);
-            Toast.makeText(MainActivity.this, "Numer telefonu" + code + " " + phone, Toast.LENGTH_LONG).show();
+            // Toast.makeText(MainActivity.this, "Numer telefonu" + code + " " + phone, Toast.LENGTH_LONG).show();
         }
     }
 
-     private void goToCodeVerificationActivity(String phone) {
+    private void goToCodeVerificationActivity(String phone) {
         Intent intent = new Intent(MainActivity.this, CodeVerificationActivity.class);
-        intent.putExtra( "phone", phone);
+        intent.putExtra("phone", phone);
         startActivity(intent);
     }
 }
+
+

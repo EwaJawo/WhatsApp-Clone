@@ -3,6 +3,7 @@ package com.example.whatsappclone.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -46,6 +47,7 @@ public class CompleteInfoActivity extends AppCompatActivity {
     ArrayList<String> mReturnValues = new ArrayList<>();
     File mImageFile;
     String mUsername = "";
+    ProgressDialog mDialog;
 
 
     @Override
@@ -61,6 +63,9 @@ public class CompleteInfoActivity extends AppCompatActivity {
         mAuthProvider = new AuthProvider();
         mImageProvider =new ImageProvider();
 
+        mDialog = new ProgressDialog(CompleteInfoActivity.this);
+        mDialog.setTitle("Poczekaj chwilę");
+        mDialog.setMessage("Zapisywanie informacji");
          mOptions  = Options.init()
                 .setRequestCode(100)
                 .setCount(1)
@@ -80,25 +85,24 @@ public class CompleteInfoActivity extends AppCompatActivity {
                     saveImage();
                 }
                 else{
-                    Toast.makeText(CompleteInfoActivity.this, "Wybierz obraz i wprowadzić swoją nazwę użytkownika", Toast.LENGTH_LONG).show();                }
+                    Toast.makeText(CompleteInfoActivity.this, "Wybierz obraz i wprowadzić swoją nazwę użytkownika", Toast.LENGTH_LONG).show();
+                        }
             }
         });
 
         mCircleImagePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 startPix();
             }
         });
     }
 
-    private void startPix() {
-        Pix.start(CompleteInfoActivity.this, mOptions);
-    }
+    private void startPix() { Pix.start(CompleteInfoActivity.this, mOptions); }
 
     private void updateUserInfo(String url) {
-       mUsername = mTextInputUsername.getText().toString();
-        if (!mUsername.equals("")) {
+            if(!mUsername.equals("")) {
             User user = new User();
             user.setUsername(mUsername);
             user.setId(mAuthProvider.getId());
@@ -106,10 +110,10 @@ public class CompleteInfoActivity extends AppCompatActivity {
             mUsersProvider.update(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Toast.makeText(CompleteInfoActivity.this, "Informacje zostały poprawnie zaktualizowane", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CompleteInfoActivity.this, "Informacje zostały poprawnie zaktualizowane", Toast.LENGTH_SHORT).show();
                 }
             });
-        }
+    }
     }
 
     private void saveImage() {
@@ -126,6 +130,7 @@ public class CompleteInfoActivity extends AppCompatActivity {
                     });
                 }
                 else {
+                    mDialog.dismiss();
                     Toast.makeText(CompleteInfoActivity.this, " Nie można zapisać obrazu", Toast.LENGTH_SHORT).show();
                 }
             }
