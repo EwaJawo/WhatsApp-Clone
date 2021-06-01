@@ -6,4 +6,8 @@
         android:title="Wyjdż"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/itemProfile"
+        android:title="Profil"
+        app:showAsAction="never"/>
+
 </menu>
