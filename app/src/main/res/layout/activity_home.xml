@@ -8,24 +8,46 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/green">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <com.mancj.materialsearchbar.MaterialSearchBar
-            android:id="@+id/searchBar"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:mt_hint="Wyszukaj tekst"
-            app:mt_searchBarColor="@color/green"
-            app:mt_placeholder="WhatsApp"
-            app:mt_placeholderColor="@color/white"
-            app:mt_searchIconTint="@color/white"
-            app:mt_textColor="@color/gray"
-            app:mt_hintColor="@color/gray"
-            app:mt_backIconTint="@color/white"
-            app:mt_menuIconTint="@color/gray"
-            app:mt_leftTextSelectorTint="@color/gray"/>
+            android:orientation="vertical"
+            android:background="@color/green">
+
+            <com.mancj.materialsearchbar.MaterialSearchBar
+                android:id="@+id/searchBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:mt_hint="Wyszukaj tekst"
+                app:mt_searchBarColor="@color/green"
+                app:mt_placeholder="WhatsApp"
+                app:mt_placeholderColor="@color/white"
+                app:mt_searchIconTint="@color/white"
+                app:mt_textColor="@color/gray"
+                app:mt_hintColor="@color/gray"
+                app:mt_backIconTint="@color/white"
+                app:mt_menuIconTint="@color/gray"
+                app:mt_leftTextSelectorTint="@color/gray"/>
+
+        </LinearLayout>
+
+       <com.google.android.material.tabs.TabLayout
+           android:id="@+id/tabLayout"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:background="@color/green"
+           app:tabIndicatorColor="@color/white"
+           app:tabSelectedTextColor="@color/grayLight"
+           app:tabTextColor="@color/greenDark"/>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     </LinearLayout>
 
