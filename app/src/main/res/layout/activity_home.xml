@@ -6,11 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".activities.HomeActivity">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Home Activity"
-        android:gravity="center"
-        android:layout_gravity="center"/>
+        android:orientation="vertical"
+        android:background="@color/green">
+
+        <com.mancj.materialsearchbar.MaterialSearchBar
+            android:id="@+id/searchBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:mt_hint="Wyszukaj tekst"
+            app:mt_searchBarColor="@color/green"
+            app:mt_placeholder="WhatsApp"
+            app:mt_placeholderColor="@color/white"
+            app:mt_searchIconTint="@color/white"
+            app:mt_textColor="@color/gray"
+            app:mt_hintColor="@color/gray"
+            app:mt_backIconTint="@color/white"
+            app:mt_menuIconTint="@color/gray"
+            app:mt_leftTextSelectorTint="@color/gray"/>
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

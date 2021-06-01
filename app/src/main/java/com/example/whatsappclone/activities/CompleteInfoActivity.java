@@ -1,19 +1,18 @@
 package com.example.whatsappclone.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.graphics.Picture;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.whatsappclone.R;
 import com.example.whatsappclone.models.User;
@@ -31,7 +30,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
-import android.app.Activity;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -102,7 +100,7 @@ public class CompleteInfoActivity extends AppCompatActivity {
     private void startPix() { Pix.start(CompleteInfoActivity.this, mOptions); }
 
     private void updateUserInfo(String url) {
-            if(!mUsername.equals("")) {
+
             User user = new User();
             user.setUsername(mUsername);
             user.setId(mAuthProvider.getId());
@@ -110,13 +108,23 @@ public class CompleteInfoActivity extends AppCompatActivity {
             mUsersProvider.update(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Toast.makeText(CompleteInfoActivity.this, "Informacje zostały poprawnie zaktualizowane", Toast.LENGTH_SHORT).show();
+                    goToHomeActivity();
                 }
             });
     }
+
+    private void goToHomeActivity() {
+
+        mDialog.dismiss();
+        Toast.makeText(CompleteInfoActivity.this, "Informacje zostały poprawnie zaktualizowane", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(CompleteInfoActivity.this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
+
     private void saveImage() {
+        mDialog.show();
         mImageProvider.save(CompleteInfoActivity.this, mImageFile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
@@ -162,7 +170,5 @@ public class CompleteInfoActivity extends AppCompatActivity {
             }
         }
     }
-
-
 }
 

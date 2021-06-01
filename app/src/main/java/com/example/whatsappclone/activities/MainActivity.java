@@ -41,13 +41,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mAuthProvider.getSessionUser() !=null) {
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
     private void getData() {
         String code = mCountryCode.getSelectedCountryCodeWithPlus();
         String phone = mEditTextPhone.getText().toString();
 
         if (phone.equals("")) {
             Toast.makeText(this, "Wpisz numer telefonu", Toast.LENGTH_SHORT).show();
-        } else {
+        }
+        else {
             goToCodeVerificationActivity(code + phone);
             // Toast.makeText(MainActivity.this, "Numer telefonu" + code + " " + phone, Toast.LENGTH_LONG).show();
         }
