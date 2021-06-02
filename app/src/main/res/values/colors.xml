@@ -12,5 +12,7 @@
     <color name="gray">#C6C2C2</color>
     <color name="colorAccent">#96BCB7</color>
     <color name="grayLight">#DDD7D7</color>
-    <color name="greenDark">#7D8C7D</color>
+    <color name="greenDark">#7D8C7D</color>  
+    <color name="orange">#FF9800</color>
+    <color name="purple">#62138C</color>
 </resources>

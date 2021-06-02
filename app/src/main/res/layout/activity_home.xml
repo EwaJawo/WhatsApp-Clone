@@ -20,17 +20,17 @@
             <com.mancj.materialsearchbar.MaterialSearchBar
                 android:id="@+id/searchBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="61dp"
+                app:mt_backIconTint="@color/white"
                 app:mt_hint="Wyszukaj tekst"
-                app:mt_searchBarColor="@color/green"
+                app:mt_hintColor="@color/gray"
+                app:mt_leftTextSelectorTint="@color/gray"
+                app:mt_menuIconTint="@color/gray"
                 app:mt_placeholder="WhatsApp"
                 app:mt_placeholderColor="@color/white"
+                app:mt_searchBarColor="@color/green"
                 app:mt_searchIconTint="@color/white"
-                app:mt_textColor="@color/gray"
-                app:mt_hintColor="@color/gray"
-                app:mt_backIconTint="@color/white"
-                app:mt_menuIconTint="@color/gray"
-                app:mt_leftTextSelectorTint="@color/gray"/>
+                app:mt_textColor="@color/gray" />
 
         </LinearLayout>
 
