@@ -30,7 +30,7 @@
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabSelectImage"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_camera_white"
                 app:backgroundTint="@color/green"
@@ -81,6 +81,7 @@
              </LinearLayout>
 
                 <ImageView
+                    android:id="@+id/imageViewEditUsername"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:src="@drawable/ic_edit_gray"/>
@@ -99,11 +100,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="30dp">
+            android:layout_marginTop="15dp">
 
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="26dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:src="@drawable/ic_info_green" />
 
             <LinearLayout
@@ -120,7 +121,7 @@
                     android:text="Informacje"/>
 
                 <TextView
-                    android:id="@+id/textViewStatus"
+                    android:id="@+id/textViewInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Hej, używam Whatsapp clone"
@@ -130,6 +131,7 @@
             </LinearLayout>
 
             <ImageView
+                android:id="@+id/imageViewEditInfo"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:src="@drawable/ic_edit_gray"/>
@@ -147,7 +149,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="30dp">
+            android:layout_marginTop="15dp">
 
             <ImageView
                 android:layout_width="25dp"
@@ -171,7 +173,7 @@
                     android:id="@+id/textViewPhone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+ 1235487"
+                    android:text="+ 1 6505551234"
                     android:textColor="@color/black"
                     android:textSize="15dp"/>
 

@@ -12,7 +12,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.whatsappclone.R;
 import com.example.whatsappclone.adapters.ViewPagerAdapter;
 import com.example.whatsappclone.fragments.ChatFragment;
-import com.example.whatsappclone.fragments.ContacsFragment;
+import com.example.whatsappclone.fragments.ContactsFragment;
 import com.example.whatsappclone.fragments.PhotoFragment;
 import com.example.whatsappclone.fragments.StatusFragment;
 import com.example.whatsappclone.providers.AuthProvider;
@@ -27,7 +27,7 @@ public class HomeActivity extends AppCompatActivity implements MaterialSearchBar
     TabLayout mTabLayout;
     ViewPager mViewPager;
     ChatFragment mChatFragment;
-    ContacsFragment mContactsFragment;
+    ContactsFragment mContactsFragment;
     StatusFragment mStatusFragment;
     PhotoFragment mPhotoFragment;
 
@@ -46,7 +46,7 @@ public class HomeActivity extends AppCompatActivity implements MaterialSearchBar
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         mChatFragment = new ChatFragment();
-        mContactsFragment = new ContacsFragment();
+        mContactsFragment = new ContactsFragment();
         mStatusFragment = new StatusFragment();
         mPhotoFragment = new PhotoFragment();
 

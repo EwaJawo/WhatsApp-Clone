@@ -45,7 +45,7 @@ dependencies {
     implementation 'com.github.rahimlis:badgedtablayout:v1.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
-
+    implementation 'com.firebaseui:firebase-ui-firestore:7.1.1'
 
 
     testImplementation 'junit:junit:4.+'
