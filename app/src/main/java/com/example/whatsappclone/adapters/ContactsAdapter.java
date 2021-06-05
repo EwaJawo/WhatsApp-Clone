@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.whatsappclone.R;
 import com.example.whatsappclone.activities.ChatActivity;
 import com.example.whatsappclone.models.User;
+import com.example.whatsappclone.providers.AuthProvider;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.squareup.picasso.Picasso;
@@ -23,14 +25,28 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ContactsAdapter extends FirestoreRecyclerAdapter<User, ContactsAdapter.ViewHolder> {
 
     Context context;
+    AuthProvider authProvider;
+
 
     public ContactsAdapter(FirestoreRecyclerOptions options, Context context) {
         super(options);
         this.context = context;
+        authProvider = new AuthProvider();
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull User user) {
+    protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull final User user) {
+
+        if(user.getId().equals(authProvider.getId())) {
+            RecyclerView.LayoutParams param = (RecyclerView.LayoutParams)holder.itemView.getLayoutParams();
+            param.height = 0;
+            param.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            param.topMargin = 0;
+            param.bottomMargin = 0;
+            holder.itemView.setVisibility(View.VISIBLE);
+
+        }
+
         holder.textViewInfo.setText(user.getInfo());
         holder.textViewUsername.setText(user.getUsername());
         if (user.getImage() != null) {
@@ -47,13 +63,14 @@ public class ContactsAdapter extends FirestoreRecyclerAdapter<User, ContactsAdap
             holder.myView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    goToChatActivity();
+                    goToChatActivity(user.getId());
                 }
             });
 
     }
-    private void goToChatActivity() {
+    private void goToChatActivity(String id) {
         Intent intent = new Intent(context, ChatActivity.class);
+        intent.putExtra("id", id);
         context.startActivity(intent);
     }
     @NonNull
