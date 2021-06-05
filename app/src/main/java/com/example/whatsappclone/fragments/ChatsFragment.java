@@ -10,52 +10,54 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whatsappclone.R;
-import com.example.whatsappclone.adapters.ContactsAdapter;
-import com.example.whatsappclone.models.User;
+import com.example.whatsappclone.adapters.ChatsAdapter;
+import com.example.whatsappclone.models.Chat;
 import com.example.whatsappclone.providers.AuthProvider;
+import com.example.whatsappclone.providers.ChatsProvider;
 import com.example.whatsappclone.providers.UsersProvider;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.Query;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ContactsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ContactsFragment extends Fragment {
+public class ChatsFragment extends Fragment {
 
     View mView;
-    RecyclerView mRecyclerViewContacts;
-    ContactsAdapter mAdapter;
+    RecyclerView mRecyclerViewChats;
+    ChatsAdapter mAdapter;
+
     UsersProvider mUserProvider;
     AuthProvider mAuthProvider;
+    ChatsProvider mChatProvider;
 
-    public ContactsFragment() {
+
+    public ChatsFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.fragment_contacs, container, false);
-        mRecyclerViewContacts = mView.findViewById(R.id.recyclerViewContacts);
+        mView = inflater.inflate(R.layout.fragment_chat, container, false);
+        mRecyclerViewChats = mView.findViewById(R.id.recyclerViewChats);
         mUserProvider = new UsersProvider();
         mAuthProvider = new AuthProvider();
+        mChatProvider = new ChatsProvider();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerViewContacts.setLayoutManager(linearLayoutManager);
+        mRecyclerViewChats.setLayoutManager(linearLayoutManager);
         return mView;
-     }
+    }
 
     @Override
     public void onStart() {
         super.onStart();
-        Query query = mUserProvider.getAllUserByName();
-        FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
-                                                    .setQuery(query, User.class)
-                                                    .build();
-        mAdapter = new ContactsAdapter(options, getContext());
-        mRecyclerViewContacts.setAdapter(mAdapter);
+        Query query = mChatProvider.getUserChats(mAuthProvider.getId());
+        
+        FirestoreRecyclerOptions<Chat> options = new FirestoreRecyclerOptions.Builder<Chat>()
+                .setQuery(query, Chat.class)
+                .build();
+
+        mAdapter = new ChatsAdapter(options, getContext());
+        mRecyclerViewChats.setAdapter(mAdapter);
         mAdapter.startListening();
     }
     @Override

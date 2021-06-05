@@ -11,7 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.whatsappclone.R;
 import com.example.whatsappclone.adapters.ViewPagerAdapter;
-import com.example.whatsappclone.fragments.ChatFragment;
+import com.example.whatsappclone.fragments.ChatsFragment;
 import com.example.whatsappclone.fragments.ContactsFragment;
 import com.example.whatsappclone.fragments.PhotoFragment;
 import com.example.whatsappclone.fragments.StatusFragment;
@@ -26,7 +26,7 @@ public class HomeActivity extends AppCompatActivity implements MaterialSearchBar
 
     TabLayout mTabLayout;
     ViewPager mViewPager;
-    ChatFragment mChatFragment;
+    ChatsFragment mChatsFragment;
     ContactsFragment mContactsFragment;
     StatusFragment mStatusFragment;
     PhotoFragment mPhotoFragment;
@@ -45,13 +45,13 @@ public class HomeActivity extends AppCompatActivity implements MaterialSearchBar
         mViewPager.setOffscreenPageLimit(3);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        mChatFragment = new ChatFragment();
+        mChatsFragment = new ChatsFragment();
         mContactsFragment = new ContactsFragment();
         mStatusFragment = new StatusFragment();
         mPhotoFragment = new PhotoFragment();
 
         adapter.addFragment(mPhotoFragment,"");
-        adapter.addFragment(mChatFragment,"CHAT");
+        adapter.addFragment(mChatsFragment,"CHAT");
         adapter.addFragment(mContactsFragment,"KONTAKT");
         adapter.addFragment(mStatusFragment,"STATUS");
 
