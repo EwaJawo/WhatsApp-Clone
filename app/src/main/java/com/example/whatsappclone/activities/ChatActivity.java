@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -13,13 +14,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.whatsappclone.R;
+import com.example.whatsappclone.models.Chat;
 import com.example.whatsappclone.models.User;
 import com.example.whatsappclone.providers.AuthProvider;
+import com.example.whatsappclone.providers.ChatsProvider;
 import com.example.whatsappclone.providers.UsersProvider;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -28,6 +36,7 @@ public class ChatActivity extends AppCompatActivity {
     String mExtraIdUser;
     UsersProvider mUserProvider;
     AuthProvider mAuthProvider;
+    ChatsProvider mChatProvider;
     ImageView mImageViewBack;
     TextView mTextViewUsername;
     CircleImageView mCircleImageUser;
@@ -41,9 +50,47 @@ public class ChatActivity extends AppCompatActivity {
         mExtraIdUser = getIntent().getStringExtra("id");
         mUserProvider = new UsersProvider();
         mAuthProvider = new AuthProvider();
+        mChatProvider = new ChatsProvider();
 
         showChatToolbar(R.layout.chat_toolbar);
         getUserInfo();
+        checkIfExistChat();
+
+    }
+
+    private void checkIfExistChat() {
+        mChatProvider.getChatByUser1AndUser2(mExtraIdUser, mAuthProvider.getId()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(queryDocumentSnapshots != null) {
+                    if (queryDocumentSnapshots.size() == 0) {
+                        createChat();
+                    }
+                        else {
+                            Toast.makeText(ChatActivity.this, "Czat między dwoma użytkownikami już istnieje", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        });
+    }
+
+    private void createChat() {
+        Chat chat = new Chat();
+        chat.setId(mAuthProvider.getId() + mExtraIdUser);
+        chat.setTimestamp(new Date().getTime());
+
+        ArrayList<String> ids = new ArrayList<>();
+        ids.add(mAuthProvider.getId());
+        ids.add(mExtraIdUser);
+
+        chat.setIds(ids);
+
+        mChatProvider.create(chat).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(ChatActivity.this, "Czat został pomyślnie utworzony", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
