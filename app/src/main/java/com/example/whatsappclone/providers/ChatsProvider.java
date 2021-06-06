@@ -15,8 +15,9 @@ public class ChatsProvider {
     public ChatsProvider() {
         mCollection = FirebaseFirestore.getInstance().collection("Chats");
     }
+
     public Task<Void> create(Chat chat) {
-        return mCollection.document().set(chat);
+        return mCollection.document(chat.getId()).set(chat);
 
     }
     public  Query getUserChats(String idUser) {

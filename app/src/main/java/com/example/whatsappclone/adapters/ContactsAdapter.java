@@ -70,7 +70,7 @@ public class ContactsAdapter extends FirestoreRecyclerAdapter<User, ContactsAdap
     }
     private void goToChatActivity(String id) {
         Intent intent = new Intent(context, ChatActivity.class);
-        intent.putExtra("id", id);
+        intent.putExtra("idUser", id);
         context.startActivity(intent);
     }
     @NonNull
