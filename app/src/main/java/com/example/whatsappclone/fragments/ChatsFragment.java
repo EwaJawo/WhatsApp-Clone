@@ -50,6 +50,7 @@ public class ChatsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
         Query query = mChatProvider.getUserChats(mAuthProvider.getId());
         
         FirestoreRecyclerOptions<Chat> options = new FirestoreRecyclerOptions.Builder<Chat>()

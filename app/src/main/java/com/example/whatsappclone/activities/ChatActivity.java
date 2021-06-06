@@ -13,8 +13,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whatsappclone.R;
+import com.example.whatsappclone.adapters.MessagesAdapter;
 import com.example.whatsappclone.models.Chat;
 import com.example.whatsappclone.models.Message;
 import com.example.whatsappclone.models.User;
@@ -22,10 +25,12 @@ import com.example.whatsappclone.providers.AuthProvider;
 import com.example.whatsappclone.providers.ChatsProvider;
 import com.example.whatsappclone.providers.MessageProvider;
 import com.example.whatsappclone.providers.UsersProvider;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
@@ -41,13 +46,17 @@ public class ChatActivity extends AppCompatActivity {
 
     UsersProvider mUserProvider;
     AuthProvider mAuthProvider;
-    ChatsProvider mChatProvider;
+    ChatsProvider mChatsProvider;
     MessageProvider mMessageProvider;
     ImageView mImageViewBack;
     TextView mTextViewUsername;
     CircleImageView mCircleImageUser;
     EditText mEditTextMessage;
     ImageView mImageViewSend;
+
+    MessagesAdapter mAdapter;
+    RecyclerView mRecyclerViewMessage;
+    LinearLayoutManager mLinearLayoutManager;
 
 
     @Override
@@ -59,12 +68,15 @@ public class ChatActivity extends AppCompatActivity {
 
         mUserProvider = new UsersProvider();
         mAuthProvider = new AuthProvider();
-        mChatProvider = new ChatsProvider();
+        mChatsProvider = new ChatsProvider();
         mMessageProvider = new MessageProvider();
 
         mEditTextMessage = findViewById(R.id.editTextMessage);
         mImageViewSend = findViewById(R.id.imageViewSend);
+        mRecyclerViewMessage = findViewById(R.id.recyclerViewMessages);
 
+        mLinearLayoutManager = new LinearLayoutManager(ChatActivity.this);
+        mRecyclerViewMessage.setLayoutManager(mLinearLayoutManager);
 
         showChatToolbar(R.layout.chat_toolbar);
         getUserInfo();
@@ -80,10 +92,23 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mAdapter != null) {
+            mAdapter.startListening();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAdapter.stopListening();
+    }
+
     private void createMessage() {
 
         String textMessage = mEditTextMessage.getText().toString();
-
         if (!textMessage.equals("")) {
             Message message = new Message();
             message.setIdChat(mExtraidChat);
@@ -97,7 +122,7 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Void aVoid) {
                     mEditTextMessage.setText("");
-                    Toast.makeText(ChatActivity.this, "Wiadomość została utworzona poprawnie", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(ChatActivity.this, "Wiadomość została utworzona poprawnie", Toast.LENGTH_SHORT).show();
                 }
             });
         }  
@@ -108,7 +133,7 @@ public class ChatActivity extends AppCompatActivity {
     
 
     private void checkIfExistChat() {
-        mChatProvider.getChatByUser1AndUser2(mExtraIdUser, mAuthProvider.getId()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        mChatsProvider.getChatByUser1AndUser2(mExtraIdUser, mAuthProvider.getId()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if(queryDocumentSnapshots != null) {
@@ -117,11 +142,25 @@ public class ChatActivity extends AppCompatActivity {
                     }
                         else {
                             mExtraidChat = queryDocumentSnapshots.getDocuments().get(0).getId();
-                            Toast.makeText(ChatActivity.this, "Czat między dwoma użytkownikami już istnieje", Toast.LENGTH_SHORT).show();
+                            getMessagesByChat();
+
+                            // Toast.makeText(ChatActivity.this, "Czat między dwoma użytkownikami już istnieje", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
         });
+    }
+
+    private void getMessagesByChat() {
+        Query query = mMessageProvider.getMessagesByChat(mExtraidChat);
+
+        FirestoreRecyclerOptions<Message> options = new FirestoreRecyclerOptions.Builder<Message>()
+                .setQuery(query, Message.class)
+                .build();
+
+        mAdapter = new MessagesAdapter(options, ChatActivity.this);
+        mRecyclerViewMessage.setAdapter(mAdapter);
+        mAdapter.startListening();
     }
 
     private void createChat() {
@@ -138,10 +177,11 @@ public class ChatActivity extends AppCompatActivity {
         mExtraidChat = chat.getId();
 
 
-        mChatProvider.create(chat).addOnSuccessListener(new OnSuccessListener<Void>() {
+        mChatsProvider.create(chat).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(ChatActivity.this, "Czat został pomyślnie utworzony", Toast.LENGTH_SHORT).show();
+                getMessagesByChat();
+                //Toast.makeText(ChatActivity.this, "Czat został pomyślnie utworzony", Toast.LENGTH_SHORT).show();
             }
         });
 
