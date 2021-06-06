@@ -1,10 +1,13 @@
 package com.example.whatsappclone.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,8 +44,39 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
 
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull final Message message) {
+
         holder.textViewMessage.setText(message.getMessage());
         holder.textViewDate.setText(RelativeTime.timeFormatAMPM(message.getTimestamp(), context));
+
+        if (message.getIdSender().equals(authProvider.getId())) {
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                 RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                    );
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            params.setMargins(100,0,0,0);
+            holder.linearLayoutMessage.setLayoutParams(params);
+            holder.linearLayoutMessage.setPadding(30,20,50,20 );
+            holder.linearLayoutMessage.setBackground(context.getResources().getDrawable(R.drawable.bubble_corner_right));
+            holder.textViewMessage.setTextColor(Color.BLACK);
+            holder.textViewDate.setTextColor(Color.DKGRAY);
+            holder.imageViewCheck.setVisibility(View.VISIBLE);
+        }
+
+            else {
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            params.setMargins(0,0,150,0);
+            holder.linearLayoutMessage.setLayoutParams(params);
+            holder.linearLayoutMessage.setPadding(80,20,30,20 );
+            holder.linearLayoutMessage.setBackground(context.getResources().getDrawable(R.drawable.bubble_corner_left));
+            holder.textViewMessage.setTextColor(Color.BLACK);
+            holder.textViewDate.setTextColor(Color.DKGRAY);
+            holder.imageViewCheck.setVisibility(View.GONE);
+        }
 
         }
 
@@ -63,6 +97,7 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
         TextView textViewMessage;
         TextView textViewDate;
         ImageView imageViewCheck;
+        LinearLayout linearLayoutMessage;
 
         View myView;
 
@@ -72,6 +107,8 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
             textViewMessage = view.findViewById(R.id.textViewMessage);
             textViewDate= view.findViewById(R.id.textViewDate);
             imageViewCheck = view.findViewById(R.id.imageViewCheck);
+            linearLayoutMessage = view.findViewById(R.id.linearLayoutMessage);
+
 
         }
 
