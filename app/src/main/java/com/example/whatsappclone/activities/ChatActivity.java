@@ -73,9 +73,11 @@ public class ChatActivity extends AppCompatActivity {
 
         mEditTextMessage = findViewById(R.id.editTextMessage);
         mImageViewSend = findViewById(R.id.imageViewSend);
+
         mRecyclerViewMessage = findViewById(R.id.recyclerViewMessages);
 
         mLinearLayoutManager = new LinearLayoutManager(ChatActivity.this);
+        mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerViewMessage.setLayoutManager(mLinearLayoutManager);
 
         showChatToolbar(R.layout.chat_toolbar);
@@ -115,15 +117,18 @@ public class ChatActivity extends AppCompatActivity {
             message.setIdSender(mAuthProvider.getId());
             message.setIdReceiver(mExtraIdUser);
             message.setMessage(textMessage);
-            message.setStatus("Wysłany");
+            message.setStatus("WYSŁANA");
             message.setTimestamp(new Date().getTime());
 
             mMessageProvider.create(message).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     mEditTextMessage.setText("");
-                   // Toast.makeText(ChatActivity.this, "Wiadomość została utworzona poprawnie", Toast.LENGTH_SHORT).show();
-                }
+                    if(mAdapter != null) {
+                        mAdapter.notifyDataSetChanged();
+                        // Toast.makeText(ChatActivity.this, "Wiadomość została utworzona poprawnie", Toast.LENGTH_SHORT).show();
+                    }
+                 }
             });
         }  
         else {
@@ -143,11 +148,26 @@ public class ChatActivity extends AppCompatActivity {
                         else {
                             mExtraidChat = queryDocumentSnapshots.getDocuments().get(0).getId();
                             getMessagesByChat();
-
+                            updateStatus();
                             // Toast.makeText(ChatActivity.this, "Czat między dwoma użytkownikami już istnieje", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
+        });
+    }
+
+    private void updateStatus() {
+        mMessageProvider.getMessageNotRead(mExtraidChat).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for ( DocumentSnapshot document: queryDocumentSnapshots.getDocuments()) {
+                    Message message = document.toObject(Message.class);
+
+                    if (message.getIdSender().equals(mAuthProvider.getId())) {
+                        mMessageProvider.updateStatus(message.getId(), "ODEBRANA");
+                    }
+                }
+            }
         });
     }
 
@@ -161,6 +181,20 @@ public class ChatActivity extends AppCompatActivity {
         mAdapter = new MessagesAdapter(options, ChatActivity.this);
         mRecyclerViewMessage.setAdapter(mAdapter);
         mAdapter.startListening();
+
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                updateStatus();
+                int numberMessage = mAdapter.getItemCount();
+                int lastMessagePosition = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+
+                if (lastMessagePosition == -1 ||(positionStart >= (numberMessage - 1) && lastMessagePosition == (positionStart -1))) {
+                    mRecyclerViewMessage.scrollToPosition(positionStart);
+                }
+            }
+        });
     }
 
     private void createChat() {

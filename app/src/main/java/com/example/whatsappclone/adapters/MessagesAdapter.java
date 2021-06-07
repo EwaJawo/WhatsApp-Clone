@@ -33,7 +33,6 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
     ListenerRegistration listener;
 
 
-
     public MessagesAdapter(FirestoreRecyclerOptions options, Context context) {
         super(options);
         this.context = context;
@@ -50,36 +49,40 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
 
         if (message.getIdSender().equals(authProvider.getId())) {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                 RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT
-                    );
+            );
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            params.setMargins(100,0,0,0);
+            params.setMargins(100, 0, 0, 0);
             holder.linearLayoutMessage.setLayoutParams(params);
-            holder.linearLayoutMessage.setPadding(30,20,50,20 );
+            holder.linearLayoutMessage.setPadding(30, 20, 50, 20);
             holder.linearLayoutMessage.setBackground(context.getResources().getDrawable(R.drawable.bubble_corner_right));
             holder.textViewMessage.setTextColor(Color.BLACK);
             holder.textViewDate.setTextColor(Color.DKGRAY);
             holder.imageViewCheck.setVisibility(View.VISIBLE);
-        }
 
-            else {
+        } else {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT
             );
             params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-            params.setMargins(0,0,150,0);
+            params.setMargins(0, 0, 150, 0);
             holder.linearLayoutMessage.setLayoutParams(params);
-            holder.linearLayoutMessage.setPadding(80,20,30,20 );
+            holder.linearLayoutMessage.setPadding(80, 20, 30, 20);
             holder.linearLayoutMessage.setBackground(context.getResources().getDrawable(R.drawable.bubble_corner_left));
             holder.textViewMessage.setTextColor(Color.BLACK);
             holder.textViewDate.setTextColor(Color.DKGRAY);
             holder.imageViewCheck.setVisibility(View.GONE);
         }
 
+        if (message.getStatus().equals("WYSŁANA")) {
+            holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_gray);
         }
-
+        else if (message.getStatus().equals("ODEBRANA")) {
+            holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_blue);
+         }
+        }
 
     public ListenerRegistration getListener(){
         return listener;
