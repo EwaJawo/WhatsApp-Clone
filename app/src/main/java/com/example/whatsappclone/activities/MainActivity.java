@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     AuthProvider mAuthProvider;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("phone", phone);
         startActivity(intent);
     }
+
 }
 
 

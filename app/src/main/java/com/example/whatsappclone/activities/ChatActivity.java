@@ -23,7 +23,7 @@ import com.example.whatsappclone.models.Message;
 import com.example.whatsappclone.models.User;
 import com.example.whatsappclone.providers.AuthProvider;
 import com.example.whatsappclone.providers.ChatsProvider;
-import com.example.whatsappclone.providers.MessageProvider;
+import com.example.whatsappclone.providers.MessagesProvider;
 import com.example.whatsappclone.providers.UsersProvider;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,13 +41,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
 
+
     String mExtraIdUser;
     String mExtraidChat;
 
     UsersProvider mUserProvider;
     AuthProvider mAuthProvider;
     ChatsProvider mChatsProvider;
-    MessageProvider mMessageProvider;
+    MessagesProvider mMessagesProvider;
     ImageView mImageViewBack;
     TextView mTextViewUsername;
     CircleImageView mCircleImageUser;
@@ -57,7 +58,6 @@ public class ChatActivity extends AppCompatActivity {
     MessagesAdapter mAdapter;
     RecyclerView mRecyclerViewMessage;
     LinearLayoutManager mLinearLayoutManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class ChatActivity extends AppCompatActivity {
         mUserProvider = new UsersProvider();
         mAuthProvider = new AuthProvider();
         mChatsProvider = new ChatsProvider();
-        mMessageProvider = new MessageProvider();
+        mMessagesProvider = new MessagesProvider();
 
         mEditTextMessage = findViewById(R.id.editTextMessage);
         mImageViewSend = findViewById(R.id.imageViewSend);
@@ -79,6 +79,7 @@ public class ChatActivity extends AppCompatActivity {
         mLinearLayoutManager = new LinearLayoutManager(ChatActivity.this);
         mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerViewMessage.setLayoutManager(mLinearLayoutManager);
+
 
         showChatToolbar(R.layout.chat_toolbar);
         getUserInfo();
@@ -120,16 +121,17 @@ public class ChatActivity extends AppCompatActivity {
             message.setStatus("WYSŁANA");
             message.setTimestamp(new Date().getTime());
 
-            mMessageProvider.create(message).addOnSuccessListener(new OnSuccessListener<Void>() {
+            mMessagesProvider.create(message).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     mEditTextMessage.setText("");
                     if(mAdapter != null) {
                         mAdapter.notifyDataSetChanged();
+                    }
+                    mChatsProvider.updateNumberMessages(mExtraidChat);
                         // Toast.makeText(ChatActivity.this, "Wiadomość została utworzona poprawnie", Toast.LENGTH_SHORT).show();
                     }
-                 }
-            });
+                 });
         }  
         else {
             Toast.makeText(this, "Wpisz wiadomość", Toast.LENGTH_SHORT).show();
@@ -157,14 +159,14 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void updateStatus() {
-        mMessageProvider.getMessageNotRead(mExtraidChat).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        mMessagesProvider.getMessageNotRead(mExtraidChat).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for ( DocumentSnapshot document: queryDocumentSnapshots.getDocuments()) {
                     Message message = document.toObject(Message.class);
 
-                    if (message.getIdSender().equals(mAuthProvider.getId())) {
-                        mMessageProvider.updateStatus(message.getId(), "ODEBRANA");
+                    if (!message.getIdSender().equals(mAuthProvider.getId())) {
+                        mMessagesProvider.updateStatus(message.getId(), "ODEBRANA");
                     }
                 }
             }
@@ -172,7 +174,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getMessagesByChat() {
-        Query query = mMessageProvider.getMessagesByChat(mExtraidChat);
+        Query query = mMessagesProvider.getMessagesByChat(mExtraidChat);
 
         FirestoreRecyclerOptions<Message> options = new FirestoreRecyclerOptions.Builder<Message>()
                 .setQuery(query, Message.class)
@@ -201,7 +203,7 @@ public class ChatActivity extends AppCompatActivity {
         Chat chat = new Chat();
         chat.setId(mAuthProvider.getId() + mExtraIdUser);
         chat.setTimestamp(new Date().getTime());
-
+        chat.setNumberMessages(0);
         ArrayList<String> ids = new ArrayList<>();
         ids.add(mAuthProvider.getId());
         ids.add(mExtraIdUser);

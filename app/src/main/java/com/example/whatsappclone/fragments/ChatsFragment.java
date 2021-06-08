@@ -26,7 +26,7 @@ public class ChatsFragment extends Fragment {
 
     UsersProvider mUserProvider;
     AuthProvider mAuthProvider;
-    ChatsProvider mChatProvider;
+    ChatsProvider mChatsProvider;
 
 
     public ChatsFragment() {
@@ -40,10 +40,11 @@ public class ChatsFragment extends Fragment {
         mRecyclerViewChats = mView.findViewById(R.id.recyclerViewChats);
         mUserProvider = new UsersProvider();
         mAuthProvider = new AuthProvider();
-        mChatProvider = new ChatsProvider();
+        mChatsProvider = new ChatsProvider();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerViewChats.setLayoutManager(linearLayoutManager);
+
         return mView;
     }
 
@@ -51,7 +52,7 @@ public class ChatsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        Query query = mChatProvider.getUserChats(mAuthProvider.getId());
+        Query query = mChatsProvider.getUserChats(mAuthProvider.getId());
         
         FirestoreRecyclerOptions<Chat> options = new FirestoreRecyclerOptions.Builder<Chat>()
                 .setQuery(query, Chat.class)
@@ -70,8 +71,13 @@ public class ChatsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mAdapter.getListener() !=null) {
+        if (mAdapter.getListener() != null) {
             mAdapter.getListener().remove();
         }
+
+        if (mAdapter.getListenerLastMessage() != null) {
+            mAdapter.getListenerLastMessage().remove();
+        }
+
     }
 }
