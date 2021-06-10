@@ -4,6 +4,7 @@ import com.example.whatsappclone.models.Chat;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -28,6 +29,17 @@ public class ChatsProvider {
         return mCollection.whereArrayContains("ids", idUser).whereGreaterThanOrEqualTo("numberMessages", 1);
 
     }
+
+    public DocumentReference getChatById(String idChat) {
+        return mCollection.document(idChat);
+    }
+
+    public Task<Void> updateWriting(String idChat, String idUser) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("writing", idUser);
+        return mCollection.document(idChat).update(map);
+    }
+
 
     public Query getChatByUser1AndUser2(final  String idUser1, String idUser2) {
         ArrayList<String> ids = new ArrayList<>();

@@ -2,6 +2,8 @@ package com.example.whatsappclone.activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -30,12 +32,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -51,6 +56,7 @@ public class ChatActivity extends AppCompatActivity {
     MessagesProvider mMessagesProvider;
     ImageView mImageViewBack;
     TextView mTextViewUsername;
+    TextView mTextViewOnline;
     CircleImageView mCircleImageUser;
     EditText mEditTextMessage;
     ImageView mImageViewSend;
@@ -59,10 +65,14 @@ public class ChatActivity extends AppCompatActivity {
     RecyclerView mRecyclerViewMessage;
     LinearLayoutManager mLinearLayoutManager;
 
+    Timer mTimer;
+    ListenerRegistration mListenerChat;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
         mExtraIdUser = getIntent().getStringExtra("idUser");
         mExtraidChat = getIntent().getStringExtra("idChat");
 
@@ -85,12 +95,47 @@ public class ChatActivity extends AppCompatActivity {
         getUserInfo();
 
         checkIfExistChat();
+        setWriting ();
 
 
         mImageViewSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createMessage();
+            }
+        });
+    }
+
+    private void setWriting() {
+        mEditTextMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            //pisz
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (mTimer != null) {
+                    if (mExtraidChat != null) {
+                        mChatsProvider.updateWriting(mExtraidChat, mAuthProvider.getId());
+                        mTimer.cancel();
+                    }
+                }
+            }
+            //jeśli użytkownik przestał pisać
+            @Override
+            public void afterTextChanged(Editable s) {
+               mTimer = new Timer();
+               mTimer.schedule(new TimerTask() {
+                   @Override
+                   public void run() {
+                       if (mExtraidChat !=null) {
+                           mChatsProvider.updateWriting(mExtraidChat,"");
+                       }
+                   }
+               }, 2000);
+
             }
         });
     }
@@ -107,6 +152,14 @@ public class ChatActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         mAdapter.stopListening();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mListenerChat != null) {
+            mListenerChat.remove();
+        }
     }
 
     private void createMessage() {
@@ -151,11 +204,39 @@ public class ChatActivity extends AppCompatActivity {
                             mExtraidChat = queryDocumentSnapshots.getDocuments().get(0).getId();
                             getMessagesByChat();
                             updateStatus();
+                            getChatInfo();
                             // Toast.makeText(ChatActivity.this, "Czat między dwoma użytkownikami już istnieje", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
         });
+    }
+
+    private void getChatInfo() {
+        mListenerChat = mChatsProvider.getChatById(mExtraidChat).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        @Override
+        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
+            if (documentSnapshot != null) {
+                if (documentSnapshot.exists()) {
+                    Chat chat = documentSnapshot.toObject(Chat.class);
+                    if (chat.getWriting() !=null) {
+                        if (!chat.getWriting().equals("")) {
+                            if (chat.getWriting().equals(mAuthProvider.getId())) {
+                                mTextViewOnline.setText("Pisze...");
+                            }
+                            else {
+                                mTextViewOnline.setText("");
+                            }
+                        }
+                        else {
+                            mTextViewOnline.setText("");
+
+                        }
+                    }
+                }
+            }
+        }
+    });
     }
 
     private void updateStatus() {
@@ -177,6 +258,7 @@ public class ChatActivity extends AppCompatActivity {
         Query query = mMessagesProvider.getMessagesByChat(mExtraidChat);
 
         FirestoreRecyclerOptions<Message> options = new FirestoreRecyclerOptions.Builder<Message>()
+                .setLifecycleOwner(this)
                 .setQuery(query, Message.class)
                 .build();
 
@@ -204,6 +286,7 @@ public class ChatActivity extends AppCompatActivity {
         chat.setId(mAuthProvider.getId() + mExtraIdUser);
         chat.setTimestamp(new Date().getTime());
         chat.setNumberMessages(0);
+        chat.setWriting("");
         ArrayList<String> ids = new ArrayList<>();
         ids.add(mAuthProvider.getId());
         ids.add(mExtraIdUser);
@@ -257,6 +340,8 @@ public class ChatActivity extends AppCompatActivity {
       mImageViewBack = view.findViewById(R.id.imageViewBack);
       mTextViewUsername = view.findViewById(R.id.textViewUsername);
       mCircleImageUser = view.findViewById(R.id.circleImageUser);
+      mTextViewOnline =  view.findViewById(R.id.textViewOnline);
+
        mImageViewBack.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
