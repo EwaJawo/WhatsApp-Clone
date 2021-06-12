@@ -77,6 +77,16 @@
                 android:maxLines="1"
                 android:layout_weight="1" />
 
+                <TextView
+                    android:id="@+id/textViewWriting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pisze..."
+                    android:textColor="@color/greenAccent"
+                    android:maxLines="1"
+                    android:layout_weight="1"
+                    android:visibility="gone"/>
+
                 <FrameLayout
                     android:id="@+id/frameLayoutMessagesNotRead"
                     android:layout_width="wrap_content"
