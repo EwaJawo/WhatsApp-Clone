@@ -37,7 +37,7 @@ public class ContactsAdapter extends FirestoreRecyclerAdapter<User, ContactsAdap
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull final User user) {
 
-        if(user.getId().equals(authProvider.getId())) {
+        if (user.getId().equals(authProvider.getId())) {
             RecyclerView.LayoutParams param = (RecyclerView.LayoutParams)holder.itemView.getLayoutParams();
             param.height = 0;
             param.width = LinearLayout.LayoutParams.MATCH_PARENT;

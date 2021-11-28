@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -28,7 +27,6 @@ import com.example.whatsappclone.providers.UsersProvider;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
@@ -70,7 +68,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        mExtraIdUser = getIntent().getStringExtra("id");
+        mExtraIdUser = getIntent().getStringExtra("idUser");
         mExtraidChat = getIntent().getStringExtra("idChat");
 
         mUserProvider = new UsersProvider();
@@ -225,7 +223,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void getUserInfo() {
 
-        mUserProvider.getUserInfo(mExtraIdUser).addSnapshotListener((documentSnapshot, error) -> {
+        mUserProvider.getUserInfo(mExtraIdUser).addSnapshotListener((DocumentSnapshot documentSnapshot, FirebaseFirestoreException error) -> {
             if (documentSnapshot != null) {
                 if (documentSnapshot.exists()) {
                     User user = documentSnapshot.toObject(User.class);
