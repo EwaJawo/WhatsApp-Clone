@@ -61,28 +61,31 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
             holder.textViewDate.setTextColor(Color.DKGRAY);
             holder.imageViewCheck.setVisibility(View.VISIBLE);
 
-            if (message.getStatus().equals("WYSŁANA")) {
+
+            if (message.getStatus().equals("WYSLANO")) {
                 holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_gray);
             }
-            else if (message.getStatus().equals("ODEBRANA")) {
+            else if (message.getStatus().equals("ODEBRANO")) {
                 holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_blue);
             }
-
-        } else {
+        }
+        else {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT
             );
             params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-            params.setMargins(0, 0, 150, 0);
+            params.setMargins(0, 0, 100, 0);
             holder.linearLayoutMessage.setLayoutParams(params);
-            holder.linearLayoutMessage.setPadding(80, 20, 30, 20);
+            holder.linearLayoutMessage.setPadding(30, 20, 30, 20);
             holder.linearLayoutMessage.setBackground(context.getResources().getDrawable(R.drawable.bubble_corner_left));
             holder.textViewMessage.setTextColor(Color.BLACK);
             holder.textViewDate.setTextColor(Color.DKGRAY);
             holder.imageViewCheck.setVisibility(View.GONE);
+
         }
-        }
+
+    }
 
     public ListenerRegistration getListener(){
         return listener;
@@ -101,6 +104,7 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
         TextView textViewDate;
         ImageView imageViewCheck;
         LinearLayout linearLayoutMessage;
+
 
         View myView;
 

@@ -44,7 +44,6 @@ public class ContactsAdapter extends FirestoreRecyclerAdapter<User, ContactsAdap
             param.topMargin = 0;
             param.bottomMargin = 0;
             holder.itemView.setVisibility(View.VISIBLE);
-
         }
 
         holder.textViewInfo.setText(user.getInfo());

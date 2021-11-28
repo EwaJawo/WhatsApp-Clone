@@ -18,12 +18,9 @@ public class UsersProvider {
         mCollection = FirebaseFirestore.getInstance().collection("Users");
     }
 
-    public DocumentReference getUserInfo(String id) {
+    public DocumentReference getUserInfo(String id) { return mCollection.document(id); }
 
-        return mCollection.document(id);
-    }
-
-        public Query getAllUserByName(){
+    public Query getAllUserByName(){
         return mCollection.orderBy("username");
         }
 

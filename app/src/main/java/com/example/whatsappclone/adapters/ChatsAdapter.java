@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -55,99 +54,51 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
         user = new User();
     }
 
+
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull final Chat chat) {
 
-            String idUser = "";
+        String idUser = "";
             for (int i = 0; i <chat.getIds().size(); i ++) {
-                if(!authProvider.getId().equals(chat.getIds().get(i))) {
+                if (!authProvider.getId().equals(chat.getIds().get(i))) {
                     idUser = chat.getIds().get(i);
                     break;
                 }
             }
             getLastMessage(holder, chat.getId());
-
             getUserInfo(holder, idUser);
-
-            getMessagesNotRead(holder,chat.getId());
-            setWriting(holder, chat);
             clickMyView(holder, chat.getId(), idUser);
         }
 
-    private void setWriting(ViewHolder holder, Chat chat) {
-        if (chat.getWriting() !=null) {
-            if (!chat.getWriting().equals("")) {
-                if (chat.getWriting().equals(authProvider.getId())) {
-                    holder.textViewWriting.setVisibility(View.VISIBLE);
-                    holder.textViewLastMessage.setVisibility(View.GONE);
-                }
-                else {
-                    holder.textViewWriting.setVisibility(View.GONE);
-                    holder.textViewLastMessage.setVisibility(View.VISIBLE);
-                }
-            }
-            else {
-                holder.textViewWriting.setVisibility(View.GONE);
-                holder.textViewLastMessage.setVisibility(View.VISIBLE);
-            }
-        }
-
-    }
-
-    private void getMessagesNotRead(final ViewHolder holder, final String idChat) {
-        messagesProvider.getReceiverMessagesNotRead(idChat, authProvider.getId()).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
-                if (querySnapshot != null) {
-                   int size = querySnapshot.size();
-                   if (size > 0) {
-                       holder.frameLayoutMessagesNotRead.setVisibility(View.VISIBLE);
-                       holder.textViewMessagesNotRead.setText(String.valueOf(size));
-                       holder.textViewTimestamp.setTextColor(context.getResources().getColor(R.color.greenAccent));
-                   }
-                   else {
-                       holder.frameLayoutMessagesNotRead.setVisibility(View.GONE);
-                       holder.textViewTimestamp.setTextColor(context.getResources().getColor(R.color.grayDark));
-
-                   }
-                   }
-                }
-        });
-    }
-
     private void getLastMessage(final ViewHolder holder, String idChat) {
-       listenerLastMessage = messagesProvider.getLastMessage(idChat).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        listenerLastMessage = messagesProvider.getLastMessage(idChat).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
                 if (querySnapshot != null) {
                     int size = querySnapshot.size();
-                    if (size >0) {
+                    if (size > 0) {
                         Message message = querySnapshot.getDocuments().get(0).toObject(Message.class);
                         holder.textViewLastMessage.setText(message.getMessage());
                         holder.textViewTimestamp.setText(RelativeTime.timeFormatAMPM(message.getTimestamp(), context));
 
                         if (message.getIdSender().equals(authProvider.getId())) {
                             holder.imageViewCheck.setVisibility(View.VISIBLE);
-
-                            if (message.getStatus().equals("WYSŁANA")) {
-                               holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_gray);
+                            if (message.getStatus().equals("WYSLANO")) {
+                                holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_gray);
                             }
-                           else  if (message.getStatus().equals("ODEBRANE")) {
+                           else if (message.getStatus().equals("ODEBRANO")) {
                                 holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_blue);
                             }
                         }
-                        else {
+                        else{
                             holder.imageViewCheck.setVisibility(View.GONE);
-
                         }
-                     }
+
+                    }
                 }
             }
         });
-
     }
-
-
 
 
     private void clickMyView(ViewHolder holder, final String idChat,  final String idUser) {
@@ -174,7 +125,8 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
                                 } else {
                                     holder.circleImageUser.setImageResource(R.drawable.ic_person);
                                 }
-                            } else {
+                            }
+                            else {
                                 holder.circleImageUser.setImageResource(R.drawable.ic_person);
                             }
                         }
@@ -190,6 +142,7 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
     public ListenerRegistration getListenerLastMessage(){
         return listenerLastMessage;
     }
+
 
     private void goToChatActivity(String idChat, String idUser) {
         Intent intent = new Intent(context, ChatActivity.class);
@@ -211,22 +164,18 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
         CircleImageView circleImageUser;
         ImageView imageViewCheck;
         View myView;
-        FrameLayout frameLayoutMessagesNotRead;
-        TextView textViewMessagesNotRead;
-        TextView textViewWriting;
+
 
 
         public ViewHolder(View view) {
             super(view);
             myView = view;
             textViewUsername = view.findViewById(R.id.textViewUsername);
-            textViewLastMessage = view.findViewById(R.id.textViewLastMessage);
+            textViewLastMessage = view.findViewById(R.id. textViewLastMessage);
             textViewTimestamp = view.findViewById(R.id.textViewTimestamp);
             circleImageUser = view.findViewById(R.id.circleImageUser);
             imageViewCheck = view.findViewById(R.id.imageViewCheck);
-            frameLayoutMessagesNotRead = view.findViewById(R.id.frameLayoutMessagesNotRead);
-            textViewMessagesNotRead = view.findViewById(R.id.textViewMessagesNotRead);
-            textViewWriting = view.findViewById(R.id.textViewWriting);
+
 
         }
 
