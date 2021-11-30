@@ -25,7 +25,7 @@ public class ChatsProvider {
     }
 
     public Query getUserChats(String idUser) {
-        return mCollection.whereArrayContains("ids", idUser);
+        return mCollection.whereArrayContains("ids", idUser).whereGreaterThanOrEqualTo("numberMessages",1);
     }
 
     public Query getChatByUser1AndUser2(String idUser1, String idUser2) {

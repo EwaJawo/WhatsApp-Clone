@@ -61,6 +61,13 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
             holder.textViewDate.setTextColor(Color.DKGRAY);
             holder.imageViewCheck.setVisibility(View.VISIBLE);
 
+            if (message.getStatus().equals("WYSLANO")) {
+                holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_gray);
+            }
+            else if (message.getStatus().equals("ODEBRANA")) {
+                holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_blue);
+            }
+
         }
         else {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
@@ -77,12 +84,6 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
             holder.imageViewCheck.setVisibility(View.GONE);
         }
 
-        if (message.getStatus().equals("WYSLANO")) {
-            holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_gray);
-        }
-        else if (message.getStatus().equals("ODEBRANA")) {
-            holder.imageViewCheck.setImageResource(R.drawable.icon_double_check_blue);
-        }
     }
 
     public ListenerRegistration getListener(){

@@ -129,6 +129,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (mAdapter != null) {
                     mAdapter.notifyDataSetChanged();
                 }
+                mChatsProvider.updateNumberMessages(mExtraidChat);
                 //Toast.makeText(ChatActivity.this, "Wiadomość została utworzona poprawnie",Toast.LENGTH_SHORT).show();
             });
         }
