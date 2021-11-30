@@ -33,7 +33,7 @@ public class MessagesProvider {
     }
 
     public Query getMessageNotRead(String idChat) {
-        return mCollection.whereEqualTo("idChat", idChat).whereEqualTo("status", "WYSŁANA");
+        return mCollection.whereEqualTo("idChat", idChat).whereEqualTo("status", "WYSLANO");
     }
 
         public Query getLastMessage(String idChat) {

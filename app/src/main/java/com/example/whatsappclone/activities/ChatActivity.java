@@ -90,8 +90,12 @@ public class ChatActivity extends AppCompatActivity {
 
         checkIfExistChat();
 
-
-        mImageViewSend.setOnClickListener(v -> createMessage());
+        mImageViewSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createMessage();
+            }
+        });
     }
 
     @Override
@@ -110,7 +114,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void createMessage() {
-
         String textMessage = mEditTextMessage.getText().toString();
         if (!textMessage.equals("")) {
             Message message = new Message();
@@ -121,23 +124,18 @@ public class ChatActivity extends AppCompatActivity {
             message.setStatus("WYSLANO");
             message.setTimestamp(new Date().getTime());
 
-            mMessagesProvider.create(message).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    mEditTextMessage.setText("");
-                    if (mAdapter != null) {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                    mChatsProvider.updateNumberMessages(mExtraidChat);
-                    // Toast.makeText(ChatActivity.this, "Wiadomość została utworzona poprawnie", Toast.LENGTH_SHORT).show();
+            mMessagesProvider.create(message).addOnSuccessListener(aVoid -> {
+                mEditTextMessage.setText("");
+                if (mAdapter != null) {
+                    mAdapter.notifyDataSetChanged();
                 }
+                //Toast.makeText(ChatActivity.this, "Wiadomość została utworzona poprawnie",Toast.LENGTH_SHORT).show();
             });
-        }  
+        }
         else {
-            Toast.makeText(this, "Wpisz wiadomość", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Wpisz wiadomość",Toast.LENGTH_SHORT).show();
         }
     }
-    
 
     private void checkIfExistChat() {
         mChatsProvider.getChatByUser1AndUser2(mExtraIdUser, mAuthProvider.getId()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -191,7 +189,6 @@ public class ChatActivity extends AppCompatActivity {
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
                 updateStatus();
-
                 int numberMessage = mAdapter.getItemCount();
                 int lastMessagePosition = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
 
@@ -260,3 +257,4 @@ public class ChatActivity extends AppCompatActivity {
        mImageViewBack.setOnClickListener(v -> finish());
    }
 }
+
