@@ -23,6 +23,7 @@ import com.example.whatsappclone.models.User;
 import com.example.whatsappclone.providers.AuthProvider;
 import com.example.whatsappclone.providers.ImageProvider;
 import com.example.whatsappclone.providers.UsersProvider;
+import com.example.whatsappclone.utils.AppBackgroundHelper;
 import com.example.whatsappclone.utils.MyToolbar;
 import com.fxn.pix.Options;
 import com.fxn.pix.Pix;
@@ -121,6 +122,18 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         getUserInfo();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AppBackgroundHelper.online(ProfileActivity.this, true);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AppBackgroundHelper.online(ProfileActivity.this, false);
     }
 
     @Override

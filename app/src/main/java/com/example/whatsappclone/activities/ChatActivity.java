@@ -1,6 +1,9 @@
 package com.example.whatsappclone.activities;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,7 +30,12 @@ import com.example.whatsappclone.providers.AuthProvider;
 import com.example.whatsappclone.providers.ChatsProvider;
 import com.example.whatsappclone.providers.MessagesProvider;
 import com.example.whatsappclone.providers.UsersProvider;
+import com.example.whatsappclone.utils.AppBackgroundHelper;
+import com.example.whatsappclone.utils.RelativeTime;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.fxn.pix.Options;
+import com.fxn.pix.Pix;
+import com.fxn.utility.PermUtil;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -61,12 +69,20 @@ public class ChatActivity extends AppCompatActivity {
     EditText mEditTextMessage;
     ImageView mImageViewSend;
 
+    ImageView mImageViewSelectPictures;
+
     MessagesAdapter mAdapter;
     RecyclerView mRecyclerViewMessages;
     LinearLayoutManager mLinearLayoutManager;
 
     Timer mTimer;
     ListenerRegistration mListenerChat;
+
+    User mUser;
+
+    Options mOptions;
+    ArrayList<String> mReturnValues = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,11 +99,23 @@ public class ChatActivity extends AppCompatActivity {
 
         mEditTextMessage = findViewById(R.id.editTextMessage);
         mImageViewSend = findViewById(R.id.imageViewSend);
+        mImageViewSelectPictures = findViewById(R.id.imageViewSelectPictures);
         mRecyclerViewMessages = findViewById(R.id.recyclerViewMessages);
 
         mLinearLayoutManager = new LinearLayoutManager(ChatActivity.this);
         mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerViewMessages.setLayoutManager(mLinearLayoutManager);
+
+
+        mOptions  = Options.init()
+                .setRequestCode(100)
+                .setCount(5)
+                .setFrontfacing(false)
+                .setPreSelectedUrls(mReturnValues)
+                .setExcludeVideos(true)
+                .setVideoDurationLimitinSeconds(0)
+                .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT)
+                .setPath("/pix/images");
 
 
         showChatToolbar(R.layout.chat_toolbar);
@@ -101,6 +129,13 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 createMessage();
+            }
+        });
+
+        mImageViewSelectPictures.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startPix();
             }
         });
     }
@@ -121,7 +156,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
             }
-            //jeśli użytkownik przestał pisac
+
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -143,6 +178,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        AppBackgroundHelper.online(ChatActivity.this, true);
 
         if (mAdapter != null) {
             mAdapter.startListening();
@@ -152,7 +188,22 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        mAdapter.stopListening();
+        if (mAdapter != null) {
+            mAdapter.stopListening();
+        }
+        AppBackgroundHelper.online(ChatActivity.this, false);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mListenerChat != null) {
+            mListenerChat.remove();
+        }
+    }
+
+    private void startPix() {
+        Pix.start(ChatActivity.this, mOptions);
     }
 
     private void createMessage() {
@@ -164,6 +215,7 @@ public class ChatActivity extends AppCompatActivity {
             message.setIdReceiver(mExtraIdUser);
             message.setMessage(textMessage);
             message.setStatus("WYSLANO");
+            message.setType("text");
             message.setTimestamp(new Date().getTime());
 
             mMessagesProvider.create(message).addOnSuccessListener(aVoid -> {
@@ -201,7 +253,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getChatInfo() {
-        mChatsProvider.getChatById(mExtraidChat).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+       mListenerChat =  mChatsProvider.getChatById(mExtraidChat).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
                if(documentSnapshot != null) {
@@ -209,15 +261,20 @@ public class ChatActivity extends AppCompatActivity {
                        Chat chat = documentSnapshot.toObject(Chat.class);
                        if (chat.getWriting() != null) {
                            if (!chat.getWriting().equals("")) {
-                               if (!chat.getWriting().equals(mAuthProvider.getId())){
-                                   mTextViewOnline.setText("Pisze");
+                               if (!chat.getWriting().equals(mAuthProvider.getId())) {
+                                   mTextViewOnline.setText("Pisze...");
+                               }
+                               else if (mUser != null) {
+                                   if (mUser.isOnline()) {
+                                       mTextViewOnline.setText("Online");
+                                   } else {
+                                       String relativeTime = RelativeTime.getTimeAgo(mUser.getLastConnect(), ChatActivity.this);
+                                       mTextViewOnline.setText(relativeTime);
+                                   }
                                }
                                else {
                                    mTextViewOnline.setText("");
                                }
-                           }
-                           else{
-                               mTextViewOnline.setText("");
                            }
                        }
                    }
@@ -294,20 +351,26 @@ public class ChatActivity extends AppCompatActivity {
         mUserProvider.getUserInfo(mExtraIdUser).addSnapshotListener((DocumentSnapshot documentSnapshot, FirebaseFirestoreException error) -> {
             if (documentSnapshot != null) {
                 if (documentSnapshot.exists()) {
-                    User user = documentSnapshot.toObject(User.class);
-                    mTextViewUsername.setText(user.getUsername());
-                    if (user.getImage() != null) {
-                        if (!user.getImage().equals("")) {
-                            Picasso.with(ChatActivity.this).load(user.getImage()).into(mCircleImageUser);
+                    mUser = documentSnapshot.toObject(User.class);
+                    mTextViewUsername.setText(mUser.getUsername());
+                    if (mUser.getImage() != null) {
+                        if (!mUser.getImage().equals("")) {
+                            Picasso.with(ChatActivity.this).load(mUser.getImage()).into(mCircleImageUser);
                         }
                     }
+
+                    if (mUser.isOnline()) {
+                        mTextViewOnline.setText("Online");
+                    }
+                    else {
+                        String relativeTime = RelativeTime.getTimeAgo(mUser.getLastConnect(), ChatActivity.this);
+                             mTextViewOnline.setText(relativeTime);
+                         }
+                    }
                 }
-            }
 
         });
     }
-
-
 
     private void showChatToolbar(int resource){
        Toolbar toolbar = findViewById(R.id.toolbar);
@@ -327,5 +390,33 @@ public class ChatActivity extends AppCompatActivity {
 
        mImageViewBack.setOnClickListener(v -> finish());
    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && requestCode == 100) {
+            mReturnValues= data.getStringArrayListExtra(Pix.IMAGE_RESULTS);
+            Intent intent = new Intent(ChatActivity.this, ConfirmImageSendActivity.class);
+            intent.putExtra("data", mReturnValues);
+            intent.putExtra("idChat", mExtraidChat);
+            intent.putExtra("idReceiver", mExtraIdUser);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Pix.start(ChatActivity.this, mOptions);
+                } else {
+                    Toast.makeText(ChatActivity.this, "Proszę o pozwolenie na dostęp do kamery", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+        }
+    }
 }
 

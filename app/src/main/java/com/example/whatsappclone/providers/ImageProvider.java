@@ -2,23 +2,33 @@ package com.example.whatsappclone.providers;
 
 import android.content.Context;
 import android.net.Uri;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.example.whatsappclone.models.Message;
 import com.example.whatsappclone.utils.CompressorBitmapImage;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ImageProvider {
     StorageReference mStorage;
     FirebaseStorage mFirebaseStorage;
+    int index = 0;
+    MessagesProvider mMessagesProvider;
 
     public ImageProvider() {
         mFirebaseStorage = FirebaseStorage.getInstance();
         mStorage = mFirebaseStorage.getReference();
+        mMessagesProvider = new MessagesProvider();
     }
     public UploadTask save(Context context, File file) {
         byte[] imageByte = CompressorBitmapImage.getImage(context, file.getPath(),500, 500);
@@ -26,6 +36,38 @@ public class ImageProvider {
         mStorage = storage;
         UploadTask task = storage.putBytes(imageByte);
         return task;
+    }
+
+    public void uploadMultiple(final Context context, ArrayList<Message> messages) {
+        Uri[] uri = new Uri [messages.size()];
+        for (int i = 0; i < messages.size(); i++) {
+            File file = CompressorBitmapImage.reduceImageSize(new File(messages.get(i).getUrl()));
+
+            uri[i] = Uri.parse("file://"+ file.getPath());
+
+          final  StorageReference ref = mStorage.child(uri[i].getLastPathSegment());
+            ref.putFile(uri[i]).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String url = uri.toString();
+                                messages.get(index).setUrl(url);
+                                mMessagesProvider.create(messages.get(index));
+                                index++;
+                            }
+                        });
+                    }
+                    else {
+                        Toast.makeText(context, "Wystąpił błąd podczas zapisywania obrazu", Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            });
+        }
+
     }
     public Task<Uri> getDownloadUri(){ 
         return mStorage.getDownloadUrl();

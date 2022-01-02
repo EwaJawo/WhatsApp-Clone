@@ -14,10 +14,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.ChatActivity"></activity>
+        <activity android:name=".activities.ConfirmImageSendActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+
+        <activity android:name=".activities.ChatActivity" />
         <activity
             android:name=".activities.ProfileActivity"
-            android:parentActivityName=".activities.HomeActivity"></activity>
+            android:parentActivityName=".activities.HomeActivity" />
         <activity android:name=".activities.HomeActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>

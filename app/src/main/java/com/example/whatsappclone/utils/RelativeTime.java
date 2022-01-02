@@ -16,31 +16,30 @@ public class RelativeTime extends Application {
 
     public static String getTimeAgo(long time, Context ctx) {
         if (time < 1000000000000L) {
-            // if timestamp given in seconds, convert to millis
             time *= 1000;
         }
 
         long now = System.currentTimeMillis();
         if (time > now || time <= 0) {
-            return "Hace un momento";
+            return "Chwile temu";
         }
 
         // TODO: localize
         final long diff = now - time;
         if (diff < MINUTE_MILLIS) {
-            return "Hace un momento";
+            return "Chwilę temu";
         } else if (diff < 2 * MINUTE_MILLIS) {
-            return "Hace un minuto";
+            return "Minutę temu";
         } else if (diff < 50 * MINUTE_MILLIS) {
-            return "Hace " + diff / MINUTE_MILLIS + " minutos";
+            return " " + diff / MINUTE_MILLIS + " minut";
         } else if (diff < 90 * MINUTE_MILLIS) {
-            return "Hace una hora";
+            return "Godzine temu";
         } else if (diff < 24 * HOUR_MILLIS) {
-            return "Hace " + diff / HOUR_MILLIS + " horas";
+            return "" + diff / HOUR_MILLIS + " godzin";
         } else if (diff < 48 * HOUR_MILLIS) {
-            return "Ayer";
+            return "Wczoraj";
         } else {
-            return "Hace " + diff / DAY_MILLIS + " dias";
+            return " " + diff / DAY_MILLIS + " dni";
         }
     }
 
@@ -51,7 +50,6 @@ public class RelativeTime extends Application {
 
 
         if (time < 1000000000000L) {
-            // if timestamp given in seconds, convert to millis
             time *= 1000;
         }
 
@@ -67,9 +65,9 @@ public class RelativeTime extends Application {
             String dateString = formatter.format(new Date(time));
             return dateString;
         } else if (diff < 48 * HOUR_MILLIS) {
-            return "Ayer";
+            return "Wczoraj";
         } else {
-            return "Hace " + diff / DAY_MILLIS + " dias";
+            return " " + diff / DAY_MILLIS + " dni";
         }
 
     }

@@ -2,22 +2,20 @@ package com.example.whatsappclone.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import id.zelory.compressor.Compressor;
 
-/**
- * Created by Optic on 24/01/2018.
- */
 
 public class CompressorBitmapImage {
 
-    /*
-     * Metodo que permite comprimir imagenes y transformarlas a bitmap
-     */
+
     public static byte[] getImage(Context ctx, String path, int width, int height) {
         final File file_thumb_path = new File(path);
         Bitmap thumb_bitmap = null;
@@ -37,4 +35,44 @@ public class CompressorBitmapImage {
         byte[] thumb_byte = baos.toByteArray();
         return  thumb_byte;
     }
+
+    public static File reduceImageSize(File file) {
+        try {
+
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            o.inSampleSize = 6;
+
+            FileInputStream inputStream = new FileInputStream(file);
+
+             BitmapFactory.decodeStream(inputStream, null, o);
+            inputStream.close();
+
+
+             final int REQUIRED_SIZE = 60;
+
+            int scale = 1;
+            while (o.outWidth / scale / 2 >= REQUIRED_SIZE &&
+                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
+                scale *= 2;
+            }
+
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            inputStream = new FileInputStream(file);
+
+            Bitmap selectedBitmap = BitmapFactory.decodeStream(inputStream, null, o2);
+            inputStream.close();
+
+            file.createNewFile();
+            FileOutputStream outputStream = new FileOutputStream(file);
+
+            selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 60, outputStream);
+
+            return file;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
+

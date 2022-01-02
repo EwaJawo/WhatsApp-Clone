@@ -69,8 +69,30 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
             getLastMessage(holder, chat.getId());
             getUserInfo(holder, idUser);
             getMessagesNotRead(holder, chat.getId());
+
+            setWriting(holder, chat);
             clickMyView(holder, chat.getId(), idUser);
         }
+
+    private void setWriting(ViewHolder holder, Chat chat) {
+        if (chat.getWriting() != null) {
+            if (!chat.getWriting().equals("")) {
+                if (!chat.getWriting().equals(authProvider.getId())){
+                    holder.textViewWriting.setVisibility(View.VISIBLE);
+                    holder.textViewLastMessage.setVisibility(View.GONE);
+
+                }
+                else {
+                    holder.textViewWriting.setVisibility(View.GONE);
+                    holder.textViewLastMessage.setVisibility(View.VISIBLE);
+                }
+            }
+            else{
+                holder.textViewWriting.setVisibility(View.GONE);
+                holder.textViewLastMessage.setVisibility(View.VISIBLE);            }
+        }
+
+    }
 
     private void getMessagesNotRead(final ViewHolder holder, final String idChat) {
         messagesProvider.getReceiverMessagesNotRead(idChat, authProvider.getId()).addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -188,6 +210,7 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
         ImageView imageViewCheck;
         FrameLayout frameLayoutMessagesNotRead;
         TextView textViewMessagesNotRead;
+        TextView textViewWriting;
         View myView;
 
 
@@ -202,6 +225,8 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
             imageViewCheck = view.findViewById(R.id.imageViewCheck);
             frameLayoutMessagesNotRead = view.findViewById(R.id.frameLayoutMessagesNotRead);
             textViewMessagesNotRead = view.findViewById(R.id.textViewMessagesNotRead);
+            textViewWriting = view.findViewById(R.id.textViewWriting);
+
         }
 
     }

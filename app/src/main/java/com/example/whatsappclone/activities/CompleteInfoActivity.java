@@ -41,9 +41,12 @@ public class CompleteInfoActivity extends AppCompatActivity {
     UsersProvider mUsersProvider;
     AuthProvider mAuthProvider;
     ImageProvider mImageProvider;
+
     Options mOptions;
     ArrayList<String> mReturnValues = new ArrayList<>();
-    File mImageFile;
+
+
+     File mImageFile;
     String mUsername = "";
     ProgressDialog mDialog;
 
@@ -64,13 +67,12 @@ public class CompleteInfoActivity extends AppCompatActivity {
         mDialog = new ProgressDialog(CompleteInfoActivity.this);
         mDialog.setTitle("Poczekaj chwilę");
         mDialog.setMessage("Zapisywanie informacji");
-         mOptions  = Options.init()
+        mOptions  = Options.init()
                 .setRequestCode(100)
                 .setCount(1)
                 .setFrontfacing(false)
                 .setPreSelectedUrls(mReturnValues)
-                .setSpanCount(4)
-                .setMode(Options.Mode.All)
+                .setExcludeVideos(true)
                 .setVideoDurationLimitinSeconds(0)
                 .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT)
                 .setPath("/pix/images");
@@ -97,7 +99,9 @@ public class CompleteInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void startPix() { Pix.start(CompleteInfoActivity.this, mOptions); }
+    private void startPix() {
+        Pix.start(CompleteInfoActivity.this, mOptions);
+    }
 
     private void updateUserInfo(String url) {
 

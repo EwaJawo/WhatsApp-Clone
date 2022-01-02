@@ -16,12 +16,15 @@ import com.example.whatsappclone.fragments.ContactsFragment;
 import com.example.whatsappclone.fragments.PhotoFragment;
 import com.example.whatsappclone.fragments.StatusFragment;
 import com.example.whatsappclone.providers.AuthProvider;
+import com.example.whatsappclone.providers.UsersProvider;
+import com.example.whatsappclone.utils.AppBackgroundHelper;
 import com.google.android.material.tabs.TabLayout;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
 public class HomeActivity extends AppCompatActivity implements MaterialSearchBar.OnSearchActionListener{
 
     AuthProvider mAuthProvider;
+    UsersProvider mUserProvider;
     MaterialSearchBar mSearchBar;
 
     TabLayout mTabLayout;
@@ -49,6 +52,9 @@ public class HomeActivity extends AppCompatActivity implements MaterialSearchBar
         mContactsFragment = new ContactsFragment();
         mStatusFragment = new StatusFragment();
         mPhotoFragment = new PhotoFragment();
+
+        mUserProvider = new UsersProvider();
+
 
         adapter.addFragment(mPhotoFragment,"");
         adapter.addFragment(mChatsFragment,"CHAT");
@@ -79,6 +85,18 @@ public class HomeActivity extends AppCompatActivity implements MaterialSearchBar
 
         mAuthProvider = new AuthProvider();
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AppBackgroundHelper.online(HomeActivity.this, true);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AppBackgroundHelper.online(HomeActivity.this, false);
     }
 
     private void goToProfile() {
