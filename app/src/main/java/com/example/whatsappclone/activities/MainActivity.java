@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         mButtonSendCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //goToCodeVerificationActivity();
                 getData();
             }
         });
@@ -61,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             goToCodeVerificationActivity(code + phone);
-            // Toast.makeText(MainActivity.this, "Numer telefonu" + code + " " + phone, Toast.LENGTH_LONG).show();
         }
     }
 

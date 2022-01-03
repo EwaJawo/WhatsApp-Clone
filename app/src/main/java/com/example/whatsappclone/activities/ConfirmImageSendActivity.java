@@ -12,6 +12,7 @@ import com.example.whatsappclone.adapters.OptionsPagerAdapter;
 import com.example.whatsappclone.models.Message;
 import com.example.whatsappclone.providers.AuthProvider;
 import com.example.whatsappclone.providers.ImageProvider;
+import com.example.whatsappclone.utils.ExtensionFile;
 import com.example.whatsappclone.utils.ShadowTransformer;
 
 import java.util.ArrayList;
@@ -51,9 +52,17 @@ public class ConfirmImageSendActivity extends AppCompatActivity {
                 m.setIdReceiver(mExtraIdReceiver);
                 m.setStatus("WYSLANO");
                 m.setTimestamp(new Date().getTime());
-                m.setType("imagen");
                 m.setUrl(data.get(i));
-                m.setMessage("\uD83D\uDCF7imagen");
+
+
+                if (ExtensionFile.isImageFile(data.get(i))) {
+                    m.setType("imagen");
+                    m.setMessage("\uD83D\uDCF7imagen");
+                }
+                else if (ExtensionFile.isVideoFile(data.get(i))){
+                    m.setType("video");
+                    m.setMessage("\uD83C\uDFA5video");
+                }
                 messages.add(m);
             }
         }

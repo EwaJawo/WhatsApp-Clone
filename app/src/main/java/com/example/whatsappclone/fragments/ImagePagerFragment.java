@@ -1,6 +1,7 @@
 package com.example.whatsappclone.fragments;
 
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.VideoView;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
@@ -17,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import com.example.whatsappclone.R;
 import com.example.whatsappclone.activities.ConfirmImageSendActivity;
 import com.example.whatsappclone.adapters.CardAdapter;
+import com.example.whatsappclone.utils.ExtensionFile;
 
 import java.io.File;
 
@@ -27,9 +31,12 @@ public class ImagePagerFragment extends Fragment {
     ImageView mImageViewPicture;
     ImageView mImageViewBack;
     ImageView mImageViewSend;
+    FrameLayout mFrameLayoutVideo;
     LinearLayout mLinearLayoutImagePager;
     EditText mEditTextComment;
-
+    VideoView mVideo;
+    View mViewVideo;
+    ImageView mImageViewVideo;
 
 
 
@@ -53,14 +60,36 @@ public class ImagePagerFragment extends Fragment {
         mImageViewPicture = mView.findViewById(R.id.imageViewPicture);
         mImageViewBack = mView.findViewById(R.id.imageViewBack);
         mImageViewSend = mView.findViewById(R.id.imageViewSend);
+        mFrameLayoutVideo = mView.findViewById(R.id.frameLayoutVideo);
         mLinearLayoutImagePager = mView.findViewById(R.id.linearLayoutViewPager);
         mEditTextComment = mView.findViewById(R.id.editTextComment);
+        mVideo = mView.findViewById(R.id.videoView);
+        mImageViewVideo = mView.findViewById(R.id.imageViewVideo);
+        mViewVideo = mView.findViewById(R.id.viewVideo);
+
+
 
 
 
         String imagePath = getArguments().getString("image");
         int size = getArguments().getInt("size");
-        int position = getArguments().getInt("position");
+        final int position = getArguments().getInt("position");
+
+        if (ExtensionFile.isImageFile(imagePath)) {
+            mFrameLayoutVideo.setVisibility(View.GONE);
+            mImageViewPicture.setVisibility(View.VISIBLE);
+            if  (imagePath != null) {
+                File file = new File (imagePath);
+                mImageViewPicture.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+
+            }
+        }
+        else if (ExtensionFile.isVideoFile(imagePath)) {
+            mFrameLayoutVideo.setVisibility(View.VISIBLE);
+            mImageViewPicture.setVisibility(View.GONE);
+            Uri uri = Uri.parse(imagePath);
+            mVideo.setVideoURI(uri);
+        }
 
 
         if (size == 1) {
@@ -70,11 +99,6 @@ public class ImagePagerFragment extends Fragment {
             params.topMargin = 35;
         }
 
-        if  (imagePath != null) {
-            File file = new File (imagePath);
-            mImageViewPicture.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-
-        }
 
         mImageViewBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,8 +131,32 @@ public class ImagePagerFragment extends Fragment {
                 ((ConfirmImageSendActivity) getActivity()).send();
             }
         });
+        mFrameLayoutVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mVideo.isPlaying()) {
+                    mViewVideo.setVisibility(View.GONE);
+                    mImageViewVideo.setVisibility(View.GONE);
+                    mVideo.start();
+                }
+                else{
+                    mViewVideo.setVisibility(View.VISIBLE);
+                    mImageViewVideo.setVisibility(View.VISIBLE);
+                    mVideo.pause();
+                }
+            }
+        });
         return mView;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mVideo.isPlaying()) {
+            mVideo.pause();
+        }
+    }
+
     public CardView getCardView() {
        return mCardViewOptions;
     }

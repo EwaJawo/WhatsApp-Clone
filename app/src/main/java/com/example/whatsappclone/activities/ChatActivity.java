@@ -112,7 +112,7 @@ public class ChatActivity extends AppCompatActivity {
                 .setCount(5)
                 .setFrontfacing(false)
                 .setPreSelectedUrls(mReturnValues)
-                .setExcludeVideos(true)
+                .setExcludeVideos(false)
                 .setVideoDurationLimitinSeconds(0)
                 .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT)
                 .setPath("/pix/images");
